@@ -22,6 +22,7 @@ So multiple threads can call execute() simultaneously without locks.
 
 import logging
 import time
+import uuid as _uuid
 from datetime import datetime, timezone
 
 from redis import Redis
@@ -59,7 +60,7 @@ class JobExecutor:
         session: Session = self._db_session_factory()
         try:
             # ── Step 1: Mark RUNNING ────────────────────────────
-            job = session.query(Job).filter(Job.id == job_id).first()
+            job = session.query(Job).filter(Job.id == _uuid.UUID(job_id)).first()
             if job is None:
                 logger.warning(f"Job {job_id} not found in DB, skipping")
                 return {"status": "skipped", "job_id": job_id}

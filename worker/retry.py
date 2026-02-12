@@ -23,6 +23,7 @@ No special retry queue needed — the scheduler handles it.
 
 import json
 import logging
+import uuid as _uuid
 from datetime import datetime, timezone
 
 from redis import Redis
@@ -50,7 +51,13 @@ class RetryHandler:
             error_msg: the exception message
             session: an open DB session (caller manages the transaction)
         """
-        job = session.query(Job).filter(Job.id == job_id).first()
+        try:
+            uid = _uuid.UUID(job_id)
+        except (ValueError, AttributeError):
+            logger.warning(f"Invalid job_id format: {job_id}")
+            return
+
+        job = session.query(Job).filter(Job.id == uid).first()
         if job is None:
             logger.warning(f"Job {job_id} not found in DB during retry handling")
             return
