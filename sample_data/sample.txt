@@ -1,0 +1,26 @@
+The Job Scheduler Project
+
+A distributed job scheduling system that accepts tasks from users,
+decides which job should run next using pluggable scheduling policies,
+and executes them concurrently in a multithreaded worker pool.
+
+Supported scheduling policies:
+- First Come First Served (FCFS): jobs run in arrival order
+- Shortest Job First (SJF): shortest estimated duration runs first
+- Priority Queue: highest priority (lowest number) runs first
+- Round Robin: each job gets a fair time slice
+
+The system handles failures gracefully with configurable retry logic
+and a dead-letter queue for permanently failed jobs. Every job goes
+through a well-defined lifecycle: PENDING, SCHEDULED, RUNNING,
+COMPLETED, FAILED, or RETRIED.
+
+Built with Python, FastAPI, PostgreSQL, Redis, and Docker.
+This is not a toy project. These are real infrastructure patterns
+used by systems like Celery, Sidekiq, and AWS SQS at scale.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
