@@ -33,7 +33,7 @@ import threading
 from redis import Redis
 
 from config.settings import settings
-from models.base import SyncSessionLocal
+from models.base import Base, sync_engine, SyncSessionLocal
 from scheduler.engine import SchedulerEngine
 from worker.pool import WorkerPool
 
@@ -45,6 +45,13 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    # Ensure tables exist before the scheduler tries to query them.
+    # This is safe to call multiple times — if the API already created
+    # the tables, this is a no-op. Solves the race condition where
+    # the worker starts before the API has finished creating tables.
+    logger.info("Ensuring database tables exist...")
+    Base.metadata.create_all(sync_engine)
+
     redis_client = Redis.from_url(settings.redis_url)
 
     # Start the scheduler engine (polls DB → policy queue → Redis)
